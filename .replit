@@ -1,3 +1,5 @@
+language = "elixir"
+
 run = """
 mix local.hex --if-missing --force
 mix run main.exs

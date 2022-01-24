@@ -1,6 +1,6 @@
 # Wordlex - brute force Wordle solver
 
-Run this at: https://replit.com/@nshafer/WordleSolver
+Run this at: https://replit.com/@nshafer/wordlex
 
 Find a list of possible solutions given the current state of the game. Input what you currently
 see in the game, and it will give you the answer or a list of possible solutions if there isn't
