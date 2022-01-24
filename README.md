@@ -1,10 +1,12 @@
 # Wordlex - brute force Wordle solver
 
-Find a list of possible solutions given the current state of the game.
+Run this at: https://replit.com/@nshafer/WordleSolver
+
+Find a list of possible solutions given the current state of the game. Input what you currently
+see in the game, and it will give you the answer or a list of possible solutions if there isn't
+enough info yet to come to a solution.
 
 NOTE: This does not just find the answer based on the hash of today's date.
-
-Run with `mix run main.exs`
 
 ## Inputs
 
