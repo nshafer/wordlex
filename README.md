@@ -4,6 +4,8 @@ Find a list of possible solutions given the current state of the game.
 
 NOTE: This does not just find the answer based on the hash of today's date.
 
+Run with `mix run main.exs`
+
 ## Inputs
 
 ### Gray letters

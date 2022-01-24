@@ -1,8 +1,27 @@
+# Copyright 2022 Nathan Shafer
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+# documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all copies or substantial portions of
+# the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+# WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+# OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 defmodule Wordlex do
   @type gray_list :: list(binary)
   @type yellow_list :: list(nil | list(binary))
   @type green_list :: list(nil | binary)
 
+  @doc """
+  Runs an infinite loop asking for input.
+  """
+  @spec run :: no_return()
   def run() do
     IO.puts("""
     Wordle Solver
@@ -130,7 +149,7 @@ defmodule Wordlex do
     |> filter_greens(greens)
   end
 
-  def filter_grays(words, chars) do
+  defp filter_grays(words, chars) do
     words
     |> Enum.reject(fn word -> String.contains?(word, chars) end)
   end
@@ -138,14 +157,14 @@ defmodule Wordlex do
   # yellows is a list of positions in the word (length 5) and each entry is a list of yellow chars in that position.
   # so [["a", "b", "c"], ["a"], ["b", "c"], [], ["z"]] representing yellow a, b, c in position 0, a in 2, b and c in
   # the third spot, no yellows in the fourth spot and a yellow z in the fifth spot.
-  def filter_yellows(words, yellows) do
+  defp filter_yellows(words, yellows) do
     yellow_regex = build_yellow_regex(yellows)
 
     words
     |> Enum.filter(fn word -> String.match?(word, yellow_regex) end)
   end
 
-  def build_yellow_regex(yellows) do
+  defp build_yellow_regex(yellows) do
     yellows
     |> Enum.map(fn
       nil -> "."
@@ -158,14 +177,14 @@ defmodule Wordlex do
 
   # Filter words with chars that match in the specific spot. `chars` should be a list representing each position of
   # the word, and each should be `nil` or the green char in that position.
-  def filter_greens(words, chars) do
+  defp filter_greens(words, chars) do
     green_regex = build_green_regex(chars)
 
     words
     |> Enum.filter(fn word -> String.match?(word, green_regex) end)
   end
 
-  def build_green_regex(chars) do
+  defp build_green_regex(chars) do
     chars
     |> Enum.map(fn
       nil -> "."
@@ -193,7 +212,7 @@ defmodule Wordlex do
     end
   end
 
-  def check_grays_in_yellows(errors, grays, yellows) do
+  defp check_grays_in_yellows(errors, grays, yellows) do
     yellows
     |> List.flatten()
     |> Enum.uniq()
@@ -206,7 +225,7 @@ defmodule Wordlex do
     end)
   end
 
-  def check_grays_in_greens(errors, grays, greens) do
+  defp check_grays_in_greens(errors, grays, greens) do
     greens
     |> Enum.reject(fn green -> green == nil end)
     |> Enum.reduce(errors, fn green, errors ->
@@ -218,7 +237,7 @@ defmodule Wordlex do
     end)
   end
 
-  def check_yellows_in_green_spots(errors, yellows, greens) do
+  defp check_yellows_in_green_spots(errors, yellows, greens) do
     greens
     |> Enum.with_index()
     |> Enum.reject(fn {green, _i} -> green == nil end)
