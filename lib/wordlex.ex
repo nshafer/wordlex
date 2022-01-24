@@ -3,6 +3,106 @@ defmodule Wordlex do
   @type yellow_list :: list(nil | list(binary))
   @type green_list :: list(nil | binary)
 
+  def run() do
+    IO.puts("""
+    Wordle Solver
+
+    This will attempt to brute force solve a wordle puzzle based on the information at hand.
+
+    All inputs are lists of letters, such as "abcd", but you can separate them with
+    anything if you want.
+    """)
+
+    grays = Wordlex.Shell.get_chars("Please enter all gray letters shown so far: ")
+
+    IO.puts("""
+
+    Now I need to ask about all of the letters that have shown up as yellow so
+    far. Since there can be multiple yellows in each position of the word, I'll
+    ask you for each one in turn. If there are no yellows for a given position,
+    just hit enter.
+    """)
+
+    yellows =
+      [
+        "Please enter all yellow letters in the position 1: ",
+        "Please enter all yellow letters in the position 2: ",
+        "Please enter all yellow letters in the position 3: ",
+        "Please enter all yellow letters in the position 4: ",
+        "Please enter all yellow letters in the position 5: "
+      ]
+      |> Enum.map(fn prompt -> Wordlex.Shell.get_chars(prompt) end)
+
+    IO.puts("""
+
+    Finally, tell me which letters have appeared as green so far. I'll ask
+    about each position. If there is no green in that position, just hit enter.
+    """)
+
+    greens =
+      [
+        "Please enter any green letter in position 1: ",
+        "Please enter any green letter in position 2: ",
+        "Please enter any green letter in position 3: ",
+        "Please enter any green letter in position 4: ",
+        "Please enter any green letter in position 5: "
+      ]
+      |> Enum.map(fn prompt -> Wordlex.Shell.get_char(prompt) end)
+
+    case Wordlex.check_inputs(grays, yellows, greens) do
+      :ok ->
+        IO.puts("""
+
+        Attempting to solve the puzzle with the following inputs:
+
+        Gray letters:   #{Wordlex.Shell.format_chars(grays, ",")}
+        Yellow letters: #{Wordlex.Shell.format_list_of_chars(yellows, ",", " ")}
+        Green letters:  #{Wordlex.Shell.format_chars(greens, " ")}
+        """)
+
+        solutions = Wordlex.solve(grays, yellows, greens)
+        num_solutions = length(solutions)
+
+        case num_solutions do
+          0 ->
+            IO.puts(
+              "Uh oh, no possible solutions found. Are you sure you entered everything correctly?"
+            )
+
+          1 ->
+            IO.puts("The solution is: #{List.first(solutions)}")
+
+          n when n < 10 ->
+            IO.puts("There are #{num_solutions} possible solutions:\n#{Enum.join(solutions, "\n")}")
+
+          n ->
+            guesses = Enum.take_random(solutions, 5)
+
+            IO.puts("""
+            There are #{n} possible solutions! We need more information.
+
+            Here are some random guesses to try next:
+            #{Enum.join(guesses, "\n")}
+            """)
+        end
+
+      {:error, errors} ->
+        IO.puts("""
+
+        There were problems found with your answers:
+        #{Enum.join(errors, "\n")}
+        """)
+    end
+
+    IO.puts("""
+
+    ---------------------------
+
+    """)
+
+    run()
+  end
+
   @doc """
   Attempt to solve the given puzzle with the given input.
 
@@ -121,12 +221,12 @@ defmodule Wordlex do
   def check_yellows_in_green_spots(errors, yellows, greens) do
     greens
     |> Enum.with_index()
-    |> IO.inspect()
     |> Enum.reject(fn {green, _i} -> green == nil end)
     |> Enum.reduce(errors, fn {green, i}, errors ->
       yellows = Enum.at(yellows, i)
+
       if yellows != nil and green in yellows do
-        ["Green letter #{green} was also given as yellow in position #{i+1}" | errors]
+        ["Green letter #{green} was also given as yellow in position #{i + 1}" | errors]
       else
         errors
       end

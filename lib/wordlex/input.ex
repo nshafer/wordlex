@@ -1,5 +1,5 @@
 defmodule Wordlex.Shell do
-  @spec get_char(String.t) :: String.t | nil
+  @spec get_char(String.t()) :: String.t() | nil
   def get_char(prompt) do
     IO.gets(prompt)
     |> String.trim()
@@ -13,7 +13,7 @@ defmodule Wordlex.Shell do
     end)
   end
 
-  @spec get_chars(String.t) :: list(String.t)
+  @spec get_chars(String.t()) :: list(String.t())
   def get_chars(prompt) do
     IO.gets(prompt)
     |> String.trim()
